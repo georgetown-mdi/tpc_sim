@@ -20,11 +20,16 @@ num_ssn_records_to_corrupt = int(remaining_ssn_records * 0.05)
 # Select 5% of the remaining SSN records randomly
 ssn_records_to_corrupt = np.random.choice(df[df['ssn'].notnull()].index, num_ssn_records_to_corrupt, replace=False)
 
-# Corrupt the selected SSN records with '000-00-0000' or '999-99-9999' with 50% probability each
+# Corrupt the selected SSN records with '000-00-0000' or '999-99-9999' or just drop one random character (including -), with 1/3% probability each
 for index in ssn_records_to_corrupt:
-    if np.random.rand() < 0.5:
+    u = np.random.rand()
+    if u < 1./3.:
         df.at[index, 'ssn'] = '000-00-0000'
-    else:
+    elif u < 2./3.:
         df.at[index, 'ssn'] = '999-99-9999'
+    else:
+        dropind = np.random.choice(11, 1)[0]
+        s = df.at[index, 'ssn']
+        df.at[index, 'ssn'] = s[:dropind] + s[(dropind+1):]
 
 df.to_csv('CT40_output2.csv', index=False)

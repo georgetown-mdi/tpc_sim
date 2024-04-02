@@ -1,3 +1,7 @@
 # Vim temp files.
 *.swo
 *.swp
+
+.venv/
+
+*.csv
