@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#  output7.py Author "Nathan Wycoff <nathanbrwycoff@gmail.com>" Date 04.02.2024
 
 import pandas as pd
 import numpy as np
