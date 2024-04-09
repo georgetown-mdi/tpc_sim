@@ -33,4 +33,4 @@ df['Public Benefits'] = np.random.choice([0,1], df.shape[0], replace = True, p =
 # Create Treatment indicator (values 0, 1, 2) assigning 20% to value 0, 50% to value 1, and 30% to value 2 
 df['Treatment'] = np.random.choice([0,1,2], df.shape[0], replace = True, p = [0.2,0.5,0.3])
 
-df.to_csv('output_5.csv')
+df.to_csv('output_5.csv', index = False)
