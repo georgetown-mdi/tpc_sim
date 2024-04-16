@@ -13,4 +13,4 @@ midnames = np.tile(midnames,10)
 df['middle_initial'] = midnames
 df = df.rename({'middle_initial' : 'middle_name'}, axis = 1)
 
-df.to_csv('output1.csv', index = False)
+df.to_csv('CT40_output1.csv', index = False)

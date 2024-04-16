@@ -56,4 +56,4 @@ df['ClickSubmit'] = np.random.choice([0,1], df.shape[0], replace=True, p = [0.4,
 # Create SubmitIRS variable (0/1) to 80% of records where ClickSubmit=1 
 df['SubmitIRS'] = np.random.choice([0,1], df.shape[0], replace=True, p = [0.2, 0.8])
 
-df.to_csv('output7.csv', index = False)
+df.to_csv('CT40_output7.csv', index = False)
