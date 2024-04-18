@@ -37,7 +37,7 @@ df2['unique_id'] = df2.index
 
 precs = {}
 recls = {}
-for ms in string.ascii_lowercase[4:22]:
+for ms in string.ascii_lowercase[:22]:
 
     keepcols = ['unique_id'] + match_vars[ms]
     df1_sub = df1[keepcols]
