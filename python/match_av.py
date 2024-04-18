@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#  match_fun.py Author "Nathan Wycoff <nathanbrwycoff@gmail.com>" Date 04.16.2024
 
 import pandas as pd
 import numpy as np

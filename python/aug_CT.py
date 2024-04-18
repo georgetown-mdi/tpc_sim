@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#  add_mn_CT.py Author "Nathan Wycoff <nathanbrwycoff@gmail.com>" Date 04.18.2024
 
 import pandas as pd
 import string
