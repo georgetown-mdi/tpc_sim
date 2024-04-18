@@ -10,7 +10,7 @@ import altair as alt
 import splink.duckdb.comparison_library as cl
 import splink.duckdb.comparison_template_library as ctl ## Hey they also have template functions
 
-from python.match_settings import match_vars, match_settings, block_vars, nonblock_vars
+from python.match_settings import match_vars, match_settings, block_vars, comp_vars
 
 # Matching strategy
 ms = 'e'
@@ -47,7 +47,7 @@ deterministic_rules = [drs]
 linker.estimate_probability_two_random_records_match(deterministic_rules, recall=0.7)
 linker.estimate_u_using_random_sampling(max_pairs=1e6)
 
-for v in nonblock_vars[ms]:
+for v in comp_vars[ms]:
     training_blocking_rule = block_on([v])
     training_session_fname_sname = linker.estimate_parameters_using_expectation_maximisation(training_blocking_rule)
 
