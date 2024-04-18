@@ -46,9 +46,9 @@ comp_vars['u'] = ['last_name','2ch_first_name','middle_initial','dob']
 comp_vars['v'] = ['last_name','2ch_first_name','middle_initial','dob']
 
 comp_type = {}
-for ms in ['a','b','e','f','j','m','n','p','q','u']:
+for ms in ['a','b','d','e','f','j','m','n','p','q','u']:
     comp_type[ms] = 'exact'
-for ms in ['g','h','i','k','l','o','r','s','t','v']:
+for ms in ['c','g','h','i','k','l','o','r','s','t','v']:
     comp_type[ms] = 'fuzzy'
 
 ### Construct settings.
@@ -67,16 +67,17 @@ for ms in comp_vars:
                 comps = [cl.exact_match('ch4_last_name', term_frequency_adjustments=True),
                         cl.damerau_levenshtein_at_thresholds('ssn', [1,2])
                         ]
-            if 'name' in v:# ['first_name','last_name','mailing_address_street_name']
-                comps.append(ctl.name_comparison(v))
-            elif 'initial' in v:
-                comps.append(cl.exact_match(v, term_frequency_adjustments=True))
-            elif v in ['mailing_address_zipcode','zip3']:
-                comps.append(ctl.postcode_comparison(v))
-            elif v=='dob':
-                comps.append(ctl.date_comparison(v))
             else:
-                raise Exception("Unknown Fuzzy Strategy for variable "+v)
+                if 'name' in v:# ['first_name','last_name','mailing_address_street_name']
+                    comps.append(ctl.name_comparison(v))
+                elif 'initial' in v:
+                    comps.append(cl.exact_match(v, term_frequency_adjustments=True))
+                elif v in ['mailing_address_zipcode','zip3']:
+                    comps.append(ctl.postcode_comparison(v))
+                elif v=='dob':
+                    comps.append(ctl.date_comparison(v))
+                else:
+                    raise Exception("Unknown Fuzzy Strategy for variable "+v)
         else:
             raise Exception("Unknown comp_type "+comp_type[ms])
 
@@ -87,7 +88,8 @@ for ms in comp_vars:
     match_settings[ms] = {
         "link_type": "link_and_dedupe",
         "comparisons": comps,
-        "blocking_rules_to_generate_predictions": blocks,
         "retain_matching_columns": True,
         "retain_intermediate_calculation_columns": False,
     }
+    if len(blocks)>0:
+        match_settings[ms]['blocking_rules_to_generate_predictions'] = blocks
