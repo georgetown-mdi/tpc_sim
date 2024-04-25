@@ -66,14 +66,6 @@ edit_corruptor2 = \
           substitute_prob = 0.25,
           transpose_prob = 0.25)
 
-ssn_precorrupt = \
-    corruptor.CorruptValueEdit(\
-          position_function = corruptor.position_mod_uniform,
-          char_set_funct = basefunctions.char_set_ascii,
-          insert_prob = 1/3,
-          delete_prob = 1/3,
-          transpose_prob = 1/3)
-
 surname_misspell_corruptor = \
     corruptor.CorruptCategoricalValue(\
           lookup_file_name = 'geco/lookup-files/surname-misspell.csv',
@@ -126,7 +118,7 @@ ln_corrupt = [(0.1, surname_misspell_corruptor),
             (0.7, phonetic_corruptor)]
 num_corrupt = [(0.8, keyboard_corruptor),
             (0.2, postcode_missing_val_corruptor)]
-ssn_corrupt = 
+#ssn_corrupt = [(1., ssn_precorrupt)]
 date_corrupt = [(0.5, edit_corruptor), (0.5, edit_corruptor2)]
 city_corrupt = [(0.1, edit_corruptor),
             (0.1, missing_val_corruptor),
@@ -140,7 +132,7 @@ modt_dict = {
         'middle_initial':fn_corrupt,
         'last_name':ln_corrupt,
         'ssn':num_corrupt,
-        'dob':date_corrupt,
+        'age':num_corrupt,
         'mailing_address_street_number':num_corrupt,
         'mailing_address_street_name':fn_corrupt,
         'mailing_address_unit_number':num_corrupt,

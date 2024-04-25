@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 # Load the CSV file into a DataFrame
-df = pd.read_csv('data/CT40.csv')
+df = pd.read_csv('data/CT40_aug.csv')
 
 # Determine the number of records to blank (20% of total records)
 num_records_to_blank = int(len(df) * 0.2)

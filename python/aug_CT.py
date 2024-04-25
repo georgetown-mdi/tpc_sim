@@ -28,12 +28,11 @@ toins = np.where(df99.columns=='middle_initial')[0][0]
 df99.insert(toins+1, column='middle_name', value= np.nan)
 
 toins = np.where(df40.columns=='ssn')[0][0]
-df40.insert(toins+1, column='dob', value= np.nan)
+df40.insert(toins+1, column='age', value= np.nan)
 toins = np.where(df99.columns=='ssn')[0][0]
-df99.insert(toins+1, column='dob', value= np.nan)
+df99.insert(toins+1, column='age', value= np.nan)
 
 ## Add some stuff.
-possible_dates = pd.date_range('01-01-1950', '01-01-2000').date
 for i in range(df40.shape[0]):
     sid = df40.loc[i,'simulant_id']
     has99 = np.sum(sid==df99['simulant_id']) > 0
@@ -50,10 +49,10 @@ for i in range(df40.shape[0]):
             df99.loc[where99,'middle_name'] = mn
 
     ## DOB
-    dob = np.random.choice(possible_dates, 1).astype(str)[0]
-    df40.loc[i,'dob'] = dob
+    age = np.random.choice(np.arange(18,100), 1).astype(str)[0]
+    df40.loc[i,'age'] = age
     if has99:
-        df99.loc[where99,'dob'] = dob
+        df99.loc[where99,'age'] = age
 
 df40.to_csv('data/CT40_aug.csv')
 df99.to_csv('data/CT99_aug.csv')

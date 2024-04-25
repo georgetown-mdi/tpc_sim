@@ -16,7 +16,7 @@ for ms in ['e','f','g','h','i','m','n','o']:
 for ms in ['j','k','l','p','q','r']:
     block_vars[ms] = ['zip3']
 for ms in ['s','t']:
-    block_vars[ms] = ['dob']
+    block_vars[ms] = ['age']
 for ms in ['a','b','c','d','u','v']:
     block_vars[ms] = []
 
@@ -33,17 +33,17 @@ comp_vars['i'] = ['ch2_first_name','last_name']
 comp_vars['j'] = ['first_name','last_name','middle_name']
 comp_vars['k'] = ['first_name','last_name','middle_name']
 comp_vars['l'] = ['last_name','ch2_first_name']
-comp_vars['m'] = ['last_name','first_name','dob']
+comp_vars['m'] = ['last_name','first_name','age']
 comp_vars['n'] = ['last_name','first_initial','mailing_address_street_name']
-comp_vars['o'] = ['last_name','first_initial','dob']
-comp_vars['p'] = ['last_name','first_name','dob']
-comp_vars['q'] = ['last_name','first_initial','dob']
-comp_vars['q'] = ['last_name','first_name','dob']
-comp_vars['r'] = ['last_name','first_name','dob']
-comp_vars['s'] = ['last_name','2ch_first_name','zip3']
-comp_vars['t'] = ['ch4_last_name','2ch_first_name','zip3']
-comp_vars['u'] = ['last_name','2ch_first_name','middle_initial','dob']
-comp_vars['v'] = ['last_name','2ch_first_name','middle_initial','dob']
+comp_vars['o'] = ['last_name','first_initial','age']
+comp_vars['p'] = ['last_name','first_name','age']
+comp_vars['q'] = ['last_name','first_initial','age']
+comp_vars['q'] = ['last_name','first_name','age']
+comp_vars['r'] = ['last_name','first_name','age']
+comp_vars['s'] = ['last_name','ch2_first_name','zip3']
+comp_vars['t'] = ['ch4_last_name','ch2_first_name','zip3']
+comp_vars['u'] = ['last_name','ch2_first_name','middle_initial','age']
+comp_vars['v'] = ['last_name','ch2_first_name','middle_initial','age']
 
 comp_type = {}
 for ms in ['a','b','d','e','f','j','m','n','p','q','u']:
@@ -63,7 +63,7 @@ for ms in comp_vars:
         if comp_type[ms]=='exact':
             comps.append(cl.exact_match(v, term_frequency_adjustments=True))
         elif comp_type[ms]=='fuzzy':
-            if ms=='c':
+            if ms in ['c','v']:
                 comps = [cl.exact_match('ch4_last_name', term_frequency_adjustments=True),
                         cl.damerau_levenshtein_at_thresholds('ssn', [1,2])
                         ]
@@ -74,8 +74,8 @@ for ms in comp_vars:
                     comps.append(cl.exact_match(v, term_frequency_adjustments=True))
                 elif v in ['mailing_address_zipcode','zip3']:
                     comps.append(ctl.postcode_comparison(v))
-                elif v=='dob':
-                    comps.append(ctl.date_comparison(v))
+                elif v=='age':
+                    comps.append(cl.damerau_levenshtein_at_thresholds('age', [1]))
                 else:
                     raise Exception("Unknown Fuzzy Strategy for variable "+v)
         else:
