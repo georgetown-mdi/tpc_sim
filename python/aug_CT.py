@@ -22,14 +22,14 @@ for i in list(string.ascii_uppercase):
 #midnames = np.tile(midnames,10)
 
 #df['middle_initial'] = midnames
-toins = np.where(df40.columns=='middle_initial')[0][0]
+toins = int(np.where(df40.columns=='middle_initial')[0][0])
 df40.insert(toins+1, column='middle_name', value= np.nan)
-toins = np.where(df99.columns=='middle_initial')[0][0]
+toins = int(np.where(df99.columns=='middle_initial')[0][0])
 df99.insert(toins+1, column='middle_name', value= np.nan)
 
-toins = np.where(df40.columns=='ssn')[0][0]
+toins = int(np.where(df40.columns=='ssn')[0][0])
 df40.insert(toins+1, column='age', value= np.nan)
-toins = np.where(df99.columns=='ssn')[0][0]
+toins = int(np.where(df99.columns=='ssn')[0][0])
 df99.insert(toins+1, column='age', value= np.nan)
 
 ## Add some stuff.
