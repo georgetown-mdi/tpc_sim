@@ -18,7 +18,8 @@ from paretoset import paretoset
 from python.match_settings import match_vars, match_settings, block_vars, comp_vars
 
 #df1 = pd.read('CT40_output3')
-df1_targs = ['CT40_output3', 'CT40_output2']
+#df1_targs = ['CT40_output3', 'CT40_output2']
+df1_targs = ['CT40_output2', 'CT40_output3']
 df2_targs = ['CT99_aug', 'CT40_aug']
 
 res = {}
@@ -32,7 +33,8 @@ for df1t in df1_targs:
             res[dyad] = pd.DataFrame(pickle.load(f)).T
             res[dyad].columns = ['Precision','Recall','Time (s)']
 
-plt.figure(figsize=[8,8])
+#plt.figure(figsize=[8,8])
+plt.figure(figsize=[6,6])
 for dy, dyad in enumerate(dyads):
     plt.subplot(2,2,dy+1)
     df = res[dyad]
@@ -50,7 +52,8 @@ for dy, dyad in enumerate(dyads):
         plt.text(x = df.loc[v,'Precision'], y = df.loc[v,'Recall'], s =v, color =col, fontdict = {'weight':'bold'})
     plt.xlabel("Precision")
     plt.ylabel("Recall")
-    plt.title(dyad)
+    #plt.title(dyad)
+    plt.title("Task %d"%(dy+1))
     #plt.scatter(x = df['Precision'], y = df['Recall'])
 plt.tight_layout()
 plt.savefig("paretto.pdf")
@@ -65,9 +68,10 @@ for dy, dyad in enumerate(dyads):
     hasna = np.any(np.isnan(df), axis = 1)
     df.loc[hasna,'Time (s)'] = -500
     plt.bar(df.index, df['Time (s)'])
-    plt.title(dyad)
     plt.ylabel("Execution Time")
     plt.xlabel("Linkage Strategy")
+    #plt.title(dyad)
+    plt.title("Task %d"%(dy+1))
 plt.tight_layout()
 plt.savefig("exec_time.pdf")
 plt.close()
