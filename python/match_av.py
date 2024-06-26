@@ -58,8 +58,7 @@ for df1t in ['CT40_output2']:
         precs = {}
         recls = {}
         exec_time = {}
-        #for ms in string.ascii_lowercase[:22]:
-        for ms in ['o','r','v']:
+        for ms in string.ascii_lowercase[:22]:
             for i in range(10):
                 print('------------------')
             print(ms)
@@ -69,69 +68,63 @@ for df1t in ['CT40_output2']:
             tstart = time()
 
             keepcols = ['unique_id'] + match_vars[ms]
-            #if df1t=='CT40_output2' and 'middle_name' in keepcols:
-            #if False:
-            if ms=='c':
-                precision = np.nan
-                recall = np.nan
+
+            df1_sub = df1[keepcols]
+            df2_sub = df2[keepcols]
+
+            if ms=='b':
+                mdf = pd.merge(df1_sub, df2_sub, on='ssn', how = 'right')
+                isnan = np.array([np.isnan(x) if type(x)==float else False for x in mdf['ssn']])
+                mdf = mdf.loc[~isnan,:]
+                mdf = mdf.rename({'unique_id_x':'unique_id_l', 'unique_id_y':'unique_id_r'}, axis = 1)
             else:
-                #try:
-                df1_sub = df1[keepcols]
-                df2_sub = df2[keepcols]
+                #block_rule = block_on(block_vars[ms])
 
-                if ms=='b':
-                    mdf = pd.merge(df1_sub, df2_sub, on='ssn', how = 'right')
-                    isnan = np.array([np.isnan(x) if type(x)==float else False for x in mdf['ssn']])
-                    mdf = mdf.loc[~isnan,:]
-                    mdf = mdf.rename({'unique_id_x':'unique_id_l', 'unique_id_y':'unique_id_r'}, axis = 1)
-                else:
-                    #block_rule = block_on(block_vars[ms])
+                settings = match_settings[ms]
 
-                    settings = match_settings[ms]
+                linker = DuckDBLinker([df1_sub, df2_sub], settings)
 
-                    linker = DuckDBLinker([df1_sub, df2_sub], settings)
+                ### Estimate parameters
+                drs = "AND".join([' (l.'+v+' = r.'+v+') ' for v in match_vars[ms]])
+                deterministic_rules = [drs]
 
-                    ### Estimate parameters
-                    drs = "AND".join([' (l.'+v+' = r.'+v+') ' for v in match_vars[ms]])
-                    deterministic_rules = [drs]
+                linker.estimate_probability_two_random_records_match(deterministic_rules, recall=0.7)
+                linker.estimate_u_using_random_sampling(max_pairs=1e6)
 
-                    linker.estimate_probability_two_random_records_match(deterministic_rules, recall=0.7)
-                    linker.estimate_u_using_random_sampling(max_pairs=1e6)
+                for v in comp_vars[ms]:
+                    training_blocking_rule = block_on([v])
+                    training_session_fname_sname = linker.estimate_parameters_using_expectation_maximisation(training_blocking_rule)
 
-                    for v in comp_vars[ms]:
-                        training_blocking_rule = block_on([v])
-                        training_session_fname_sname = linker.estimate_parameters_using_expectation_maximisation(training_blocking_rule)
+                ### Do actual matching.
+                df_predictions = linker.predict(threshold_match_probability=0.1)
+                mdf = df_predictions.as_pandas_dataframe()
 
-                    ### Do actual matching.
-                    df_predictions = linker.predict(threshold_match_probability=0.1)
-                    mdf = df_predictions.as_pandas_dataframe()
+            ### Evaluate
+            df1_key = df1[['simulant_id','unique_id']]
+            df1_key = df1_key.rename(dict([(v,v+'_l') for v in df1_key]), axis = 1)
+            mdf = mdf.merge(df1_key, on = 'unique_id_l')
 
-                ### Evaluate
-                df1_key = df1[['simulant_id','unique_id']]
-                df1_key = df1_key.rename(dict([(v,v+'_l') for v in df1_key]), axis = 1)
-                mdf = mdf.merge(df1_key, on = 'unique_id_l')
+            df2_key = df2[['simulant_id','unique_id']]
+            df2_key = df2_key.rename(dict([(v,v+'_r') for v in df2_key]), axis = 1)
+            mdf = mdf.merge(df2_key, on = 'unique_id_r')
 
-                df2_key = df2[['simulant_id','unique_id']]
-                df2_key = df2_key.rename(dict([(v,v+'_r') for v in df2_key]), axis = 1)
-                mdf = mdf.merge(df2_key, on = 'unique_id_r')
+            num_correctly_matched = np.sum(mdf['simulant_id_l']==mdf['simulant_id_r'])
+            num_matched = mdf.shape[0]
+            num_incorrectly_matched = np.sum(mdf['simulant_id_l']!=mdf['simulant_id_r'])
+            common_records = len(set(df1['simulant_id']).intersection(df2['simulant_id']))
 
-                num_correctly_matched = np.sum(mdf['simulant_id_l']==mdf['simulant_id_r'])
-                num_matched = mdf.shape[0]
-                num_incorrectly_matched = np.sum(mdf['simulant_id_l']!=mdf['simulant_id_r'])
-                common_records = len(set(df1['simulant_id']).intersection(df2['simulant_id']))
+            recall = num_correctly_matched/common_records
+            precision = num_correctly_matched/num_matched
 
-                recall = num_correctly_matched/common_records
-                precision = num_correctly_matched/num_matched
+            precs[ms] = precision
+            recls[ms] = recall
+            print('------------------------')
+            print(ms)
+            print("Precision: %f"%precision)
+            print("Recall: %f"%recall)
+            print('------------------------')
 
-                precs[ms] = precision
-                recls[ms] = recall
-                print('------------------------')
-                print(ms)
-                print("Precision: %f"%precision)
-                print("Recall: %f"%recall)
-                print('------------------------')
-
-                exec_time[ms] = time() - tstart
+            exec_time[ms] = time() - tstart
 
         #with open("pickles/match_dmp.pkl", 'wb') as f:
         #    pickle.dump([precs, recls, exec_time], f)

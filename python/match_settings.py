@@ -63,7 +63,7 @@ for ms in comp_vars:
         if comp_type[ms]=='exact':
             comps.append(cl.exact_match(v, term_frequency_adjustments=True))
         elif comp_type[ms]=='fuzzy':
-            if ms in ['c','v']:
+            if ms in ['c']:
                 comps = [cl.exact_match('ch4_last_name', term_frequency_adjustments=True),
                         cl.damerau_levenshtein_at_thresholds('ssn', [1,2])
                         ]

@@ -14,6 +14,7 @@ from time import time
 import pickle
 import matplotlib.pyplot as plt
 from paretoset import paretoset
+from adjustText import adjust_text
 
 from python.match_settings import match_vars, match_settings, block_vars, comp_vars
 
@@ -21,6 +22,8 @@ from python.match_settings import match_vars, match_settings, block_vars, comp_v
 #df1_targs = ['CT40_output3', 'CT40_output2']
 df1_targs = ['CT40_output2', 'CT40_output3']
 df2_targs = ['CT99_aug', 'CT40_aug']
+
+adjust = False
 
 res = {}
 dyads = []
@@ -36,6 +39,7 @@ for df1t in df1_targs:
 #plt.figure(figsize=[8,8])
 plt.figure(figsize=[6,6])
 for dy, dyad in enumerate(dyads):
+    print(dyad)
     plt.subplot(2,2,dy+1)
     df = res[dyad]
     mask = paretoset(df[["Precision","Recall"]], sense=["max", "max"])
@@ -44,17 +48,23 @@ for dy, dyad in enumerate(dyads):
     plt.scatter(x = df['Precision'], y = df['Recall'], alpha = 0.)
     #plt.scatter(x = df.loc[mask, 'Precision'], y = df.loc[mask, 'Recall'], alpha = 1.)
 
+    texts = []
     for v in df.index:
         if v in pset:
             col = 'orange'
+            print(v)
         else:
             col = 'black'
-        plt.text(x = df.loc[v,'Precision'], y = df.loc[v,'Recall'], s =v, color =col, fontdict = {'weight':'bold'})
+        #txt = plt.text(x = df.loc[v,'Precision'], y = df.loc[v,'Recall'], s =v, color =col, fontdict = {'weight':'bold'})
+        txt = plt.text(x = df.loc[v,'Precision'], y = df.loc[v,'Recall'], s =v.upper(), color =col, fontdict = {'weight':'bold'})
+        texts.append(txt)
     plt.xlabel("Precision")
     plt.ylabel("Recall")
     #plt.title(dyad)
     plt.title("Task %d"%(dy+1))
     #plt.scatter(x = df['Precision'], y = df['Recall'])
+    if adjust:
+        adjust_text(texts, arrowprops=dict(arrowstyle="-", color='blue', lw=2,alpha=0))
 plt.tight_layout()
 plt.savefig("paretto.pdf")
 plt.close()
@@ -68,10 +78,29 @@ for dy, dyad in enumerate(dyads):
     hasna = np.any(np.isnan(df), axis = 1)
     df.loc[hasna,'Time (s)'] = -500
     plt.bar(df.index, df['Time (s)'])
-    plt.ylabel("Execution Time")
-    plt.xlabel("Linkage Strategy")
+    plt.ylabel("Execution Time (s)")
+    plt.xlabel("Match Pass")
+    #plt.yscale('log')
     #plt.title(dyad)
     plt.title("Task %d"%(dy+1))
 plt.tight_layout()
 plt.savefig("exec_time.pdf")
 plt.close()
+
+dfs_2_tasks = {
+        'CT40_output2_to_CT99_aug' : 'Task 1',
+        'CT40_output2_to_CT40_aug' : 'Task 2',
+        'CT40_output3_to_CT99_aug' : 'Task 3',
+        'CT40_output3_to_CT40_aug' : 'Task 4'
+        }
+
+with pd.ExcelWriter('av_results.xlsx') as xcf:
+    for v in dfs_2_tasks:
+        res[v].to_excel(xcf, sheet_name = dfs_2_tasks[v])
+
+
+# What proportion of people had 1099s?
+df1 = pd.read_csv('data/CT99_aug.csv', index_col = 0)
+df2 = pd.read_csv('data/CT40_aug.csv', index_col = 0)
+
+set(df1['simulant_id']).intersection(set(df2['simulant_id']))
