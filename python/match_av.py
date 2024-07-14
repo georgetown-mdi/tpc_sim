@@ -24,9 +24,7 @@ df1_targs = ['CT40_output3', 'CT40_output2']
 df2_targs = ['CT99_aug', 'CT40_aug']
 
 
-#for df1t in df1_targs:
-for df1t in ['CT40_output2']:
-    print("Only output 2!")
+for df1t in df1_targs:
     for df2t in df2_targs:
 
         df1 = pd.read_csv(df1t+'.csv')
