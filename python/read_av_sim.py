@@ -17,11 +17,19 @@ from paretoset import paretoset
 from adjustText import adjust_text
 
 from python.match_settings import match_vars, match_settings, block_vars, comp_vars
+import pandas as pd
+
+#mode = 'fastLink'
+mode = 'splink'
+assert mode in ['fastLink','splink']
 
 #df1 = pd.read('CT40_output3')
 #df1_targs = ['CT40_output3', 'CT40_output2']
 df1_targs = ['CT40_output2', 'CT40_output3']
+#df2_targs = ['CT99_aug', 'CT40_aug']
 df2_targs = ['CT99_aug', 'CT40_aug']
+#df1_targs = ['CT40_output3']
+#df2_targs = ['CT99_aug']
 
 adjust = False
 
@@ -31,10 +39,16 @@ for df1t in df1_targs:
     for df2t in df2_targs:
         dyad = df1t+"_to_"+df2t
         dyads.append(dyad)
-        with open("pickles/"+dyad+".pkl", 'rb') as f:
-            #res[dyad] = precs, recls, exec_time = pickle.load(f)
-            res[dyad] = pd.DataFrame(pickle.load(f)).T
+        if mode=='fastLink':
+            res[dyad] = pd.read_csv('sim_out/match_av_'+df1t + '_' + df2t + '.csv', index_col = 0)
             res[dyad].columns = ['Precision','Recall','Time (s)']
+        elif mode=='splink':
+            with open("pickles/"+dyad+".pkl", 'rb') as f:
+                #res[dyad] = precs, recls, exec_time = pickle.load(f)
+                res[dyad] = pd.DataFrame(pickle.load(f)).T
+                res[dyad].columns = ['Precision','Recall','Time (s)']
+        else:
+            raise Exception("Unknown mode.")
 
 #plt.figure(figsize=[8,8])
 plt.figure(figsize=[6,6])
@@ -48,8 +62,13 @@ for dy, dyad in enumerate(dyads):
     plt.scatter(x = df['Precision'], y = df['Recall'], alpha = 0.)
     #plt.scatter(x = df.loc[mask, 'Precision'], y = df.loc[mask, 'Recall'], alpha = 1.)
 
+    print(dyad)
+    print(pset)
+
+    reorder = [x for x in df.index if not x in pset] + pset
+
     texts = []
-    for v in df.index:
+    for v in reorder:
         if v in pset:
             col = 'orange'
             print(v)
@@ -94,13 +113,13 @@ dfs_2_tasks = {
         'CT40_output3_to_CT40_aug' : 'Task 4'
         }
 
-with pd.ExcelWriter('av_results.xlsx') as xcf:
-    for v in dfs_2_tasks:
-        res[v].to_excel(xcf, sheet_name = dfs_2_tasks[v])
+#with pd.ExcelWriter('av_results.xlsx') as xcf:
+#    for v in dfs_2_tasks:
+#        res[v].to_excel(xcf, sheet_name = dfs_2_tasks[v])
+#
+#
+## What proportion of people had 1099s?
+#df1 = pd.read_csv('data/CT99_aug.csv', index_col = 0)
+#df2 = pd.read_csv('data/CT40_aug.csv', index_col = 0)
 
-
-# What proportion of people had 1099s?
-df1 = pd.read_csv('data/CT99_aug.csv', index_col = 0)
-df2 = pd.read_csv('data/CT40_aug.csv', index_col = 0)
-
-set(df1['simulant_id']).intersection(set(df2['simulant_id']))
+#set(df1['simulant_id']).intersection(set(df2['simulant_id']))
