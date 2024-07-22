@@ -19,9 +19,10 @@ from adjustText import adjust_text
 from python.match_settings import match_vars, match_settings, block_vars, comp_vars
 import pandas as pd
 
-#mode = 'fastLink'
-mode = 'splink'
-assert mode in ['fastLink','splink']
+#mode = 'fastLink_default'
+mode = 'fastLink_splink'
+#mode = 'splink'
+assert mode in ['fastLink_default','fastLink_splink','splink']
 
 #df1 = pd.read('CT40_output3')
 #df1_targs = ['CT40_output3', 'CT40_output2']
@@ -39,8 +40,10 @@ for df1t in df1_targs:
     for df2t in df2_targs:
         dyad = df1t+"_to_"+df2t
         dyads.append(dyad)
-        if mode=='fastLink':
-            res[dyad] = pd.read_csv('sim_out/match_av_'+df1t + '_' + df2t + '.csv', index_col = 0)
+        if 'fastLink' in mode:
+            suf = mode.split('_')[1]
+            #res[dyad] = pd.read_csv('sim_out/match_av_'+df1t + '_' + df2t + '_'+suf+'.csv', index_col = 0)
+            res[dyad] = pd.read_csv('sim_out/fastLink_'+df1t + '_' + df2t + '_'+suf+'.csv', index_col = 0)
             res[dyad].columns = ['Precision','Recall','Time (s)']
         elif mode=='splink':
             with open("pickles/"+dyad+".pkl", 'rb') as f:

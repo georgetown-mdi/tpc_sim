@@ -4,12 +4,11 @@
 library(fastLink)
 source("R/match_settings.R")
 
-#df1 = pd.read('CT40_output3')
-#df1_targs <- c('CT40_output3', 'CT40_output2')
-#df2_targs <- c('CT99_aug', 'CT40_aug')
+#mode <- 'default'
+mode <- 'splink'
 
-df1_targs <- c('CT40_output2')
-df2_targs <- c('CT40_aug')
+df1_targs <- c('CT40_output3', 'CT40_output2')
+df2_targs <- c('CT99_aug', 'CT40_aug')
 
 for (df1t in df1_targs) {
     for (df2t in df2_targs) {
@@ -53,7 +52,11 @@ for (df1t in df1_targs) {
 
             ## Fuzzy match settings
             if (comp_type[[ms]]=='fuzzy') {
-                options <- c()
+                if (mode=='default') {
+                    options <- list()
+                } else if (mode=='splink') {
+                    options <- list(cut.a=0.9, cut.p = 0.8)
+                }
             } else if (comp_type[[ms]]=='exact') {
                 options <- list('cut.a' = 1., 'cut.p' = 1, 'cut.a.num' = 0., 'cut.p.num' = 0.)
             } else {
@@ -127,7 +130,7 @@ for (df1t in df1_targs) {
         }
 
         resdf <- data.frame(Precision = precs, Recall = recls, Time = times)
-        write.csv(resdf, file = paste('sim_out/fastLink_', df1t, '_', df2t, '.csv', sep=''))
+        write.csv(resdf, file = paste('sim_out/fastLink_', df1t, '_', df2t, '_',mode,'.csv', sep=''))
 
         print("overall:")
         print(Sys.time() - tta)
