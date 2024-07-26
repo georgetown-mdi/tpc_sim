@@ -1,6 +1,16 @@
 #!/usr/bin/Rscript
 
+## This is the library that lets you use python functions from R.
 library(reticulate)
+
+# We need to point that library at a version of python that has Splink installed. 
+# Here, I am doing that using the "venv" python module. 
+# To make that work, you'd do the following in a command line:
+# bash> python -m venv .venv
+# bash> source .venv/bin/activate
+# bash> pip install splink
+# Then, the following two lines are telling R to use the python virtual environment that we just set up with splink.
+# Those "." show that it assumes that the script is running from one directory above the virtual environment's location. 
 use_python("./.venv/bin/python", required = T)
 use_virtualenv("./.venv/", required = T)
 source("R/match_settings.R")
