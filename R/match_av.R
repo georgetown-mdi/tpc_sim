@@ -1,5 +1,4 @@
 #!/usr/bin/Rscript
-#  match_av.R Author "Nathan Wycoff <nathanbrwycoff@gmail.com>" Date 07.04.2024
 
 library(fastLink)
 source("R/match_settings.R")
